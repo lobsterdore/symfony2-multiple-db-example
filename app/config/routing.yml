@@ -1,0 +1,10 @@
+demo_post:
+    resource: "@DemoPostBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+demo_user:
+    resource: "@DemoUserBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
