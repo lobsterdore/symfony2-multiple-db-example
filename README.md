@@ -5,10 +5,9 @@ For more information on this repo please see my article on using multiple databa
 ## How to setup
 
 - Clone the project: git clone git@github.com:lobsterdore/symfony2-multiple-db-example.git
-- Download composer into the root of the project if needed: curl -sS https://getcomposer.org/installer | php
+- Download composer into the root of the project if needed: curl -s https://getcomposer.org/installer | php
 - Setup permissions on cache and logs directory as shown in the Symfony2 docs: http://symfony.com/doc/current/book/installation.html#configuration-and-setup
 - Run composer update to install the various third party libraries needed
-- Create parameters.yml with your db settings
 - Create the two test databases 'symfonydemo_post' and 'symfonydemo_user';
 - You can build the databases automatically, simply set the db name in parameters.yml to 'symfonydemo_post' and run 'php app/console doctrine:schema:update' to create the tables, change the db name to 'symfonydemo_user' and repeat the process to build the tables for the User entity.
 
