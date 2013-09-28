@@ -2,54 +2,113 @@
 
 namespace Demo\PostBundle\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Liip\FunctionalTestBundle\Test\WebTestCase;
 
 class PostControllerTest extends WebTestCase
 {
-    /*
-    public function testCompleteScenario()
+    protected function setUp()
     {
-        // Create a new client to browse the application
+        $classes = array(
+            "Demo\PostBundle\DataFixtures\ORM\LoadPostData",
+            "Demo\UserBundle\DataFixtures\ORM\LoadUserData"
+        );
+        $this->loadFixtures($classes);
+    }
+    
+    public function testIndex()
+    {
         $client = static::createClient();
-
-        // Create a new entry in the database
+        
         $crawler = $client->request('GET', '/post/');
         $this->assertEquals(200, $client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /post/");
-        $crawler = $client->click($crawler->selectLink('Create a new entry')->link());
-
-        // Fill in the form and submit it
-        $form = $crawler->selectButton('Create')->form(array(
-            'demo_postbundle_posttype[field_name]'  => 'Test',
-            // ... other fields to fill
-        ));
-
-        $client->submit($form);
-        $crawler = $client->followRedirect();
-
-        // Check data in the show view
-        $this->assertGreaterThan(0, $crawler->filter('td:contains("Test")')->count(), 'Missing element td:contains("Test")');
-
-        // Edit the entity
-        $crawler = $client->click($crawler->selectLink('Edit')->link());
-
-        $form = $crawler->selectButton('Edit')->form(array(
-            'demo_postbundle_posttype[field_name]'  => 'Foo',
-            // ... other fields to fill
-        ));
-
-        $client->submit($form);
-        $crawler = $client->followRedirect();
-
-        // Check the element contains an attribute with value equals "Foo"
-        $this->assertGreaterThan(0, $crawler->filter('[value="Foo"]')->count(), 'Missing element [value="Foo"]');
-
-        // Delete the entity
-        $client->submit($crawler->selectButton('Delete')->form());
-        $crawler = $client->followRedirect();
-
-        // Check the entity has been delete on the list
-        $this->assertNotRegExp('/Foo/', $client->getResponse()->getContent());
+        
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('html:contains("Create a new entry")')->count()
+        );
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('html:contains("Test Post")')->count()
+        );
     }
+    
+    public function testNew()
+    {
+        $client = static::createClient();
+        
+        $crawler = $client->request('GET', '/post/');
+        
+        $crawler = $client->click($crawler->selectLink('Create a new entry')->link());
+        
+        $form = $crawler->selectButton('Create')->form(array(
+            'demo_postbundle_post[title]'       => 'Another Test Post',
+            'demo_postbundle_post[content]'     => 'Some bloody test content',
+            'demo_postbundle_post[user]'        => 1
+        ));
 
-    */
+        $client->submit($form);
+        $crawler = $client->followRedirect();
+        
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('html:contains("Another Test Post")')->count()
+        );
+    }
+    
+    public function testEdit()
+    {
+        $client = static::createClient();
+        
+        $crawler = $client->request('GET', '/post/');
+        
+        $crawler = $client->click($crawler->selectLink('edit')->link());
+        
+        $form = $crawler->selectButton('Update')->form(array(
+            'demo_postbundle_post[title]'       => 'An edited post'
+        ));
+
+        $client->submit($form);
+        $crawler = $client->followRedirect();
+        
+        $crawler = $client->request('GET', '/post/');
+        
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('html:contains("An edited post")')->count()
+        );
+    }
+    
+    public function testShow()
+    {
+        $client = static::createClient();
+        
+        $crawler = $client->request('GET', '/post/');
+        
+        $crawler = $client->click($crawler->selectLink('show')->link());
+        
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('html:contains("Test Post")')->count()
+        );
+    }
+    
+    public function testDelete()
+    {
+        $client = static::createClient();
+        
+        $crawler = $client->request('GET', '/post/');
+        
+        $crawler = $client->click($crawler->selectLink('show')->link());
+        
+        $form = $crawler->selectButton('Delete')->form();
+
+        $client->submit($form);
+        
+        $crawler = $client->followRedirect();
+        
+        $this->assertEquals(
+            0,
+            $crawler->filter('html:contains("Test Post")')->count()
+        );
+    }
 }

@@ -7,7 +7,6 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Post
  *
- * @ORM\Table(name="symfonydemo_post.Post")
  * @ORM\Entity
  */
 class Post

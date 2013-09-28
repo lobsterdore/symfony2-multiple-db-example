@@ -1,55 +1,114 @@
 <?php
 
-namespace Demo\UserBundle\Tests\Controller;
+namespace Demo\PostBundle\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Liip\FunctionalTestBundle\Test\WebTestCase;
 
 class UserControllerTest extends WebTestCase
 {
-    /*
-    public function testCompleteScenario()
+    protected function setUp()
     {
-        // Create a new client to browse the application
-        $client = static::createClient();
-
-        // Create a new entry in the database
-        $crawler = $client->request('GET', '/user/');
-        $this->assertEquals(200, $client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /user/");
-        $crawler = $client->click($crawler->selectLink('Create a new entry')->link());
-
-        // Fill in the form and submit it
-        $form = $crawler->selectButton('Create')->form(array(
-            'demo_userbundle_usertype[field_name]'  => 'Test',
-            // ... other fields to fill
-        ));
-
-        $client->submit($form);
-        $crawler = $client->followRedirect();
-
-        // Check data in the show view
-        $this->assertGreaterThan(0, $crawler->filter('td:contains("Test")')->count(), 'Missing element td:contains("Test")');
-
-        // Edit the entity
-        $crawler = $client->click($crawler->selectLink('Edit')->link());
-
-        $form = $crawler->selectButton('Edit')->form(array(
-            'demo_userbundle_usertype[field_name]'  => 'Foo',
-            // ... other fields to fill
-        ));
-
-        $client->submit($form);
-        $crawler = $client->followRedirect();
-
-        // Check the element contains an attribute with value equals "Foo"
-        $this->assertGreaterThan(0, $crawler->filter('[value="Foo"]')->count(), 'Missing element [value="Foo"]');
-
-        // Delete the entity
-        $client->submit($crawler->selectButton('Delete')->form());
-        $crawler = $client->followRedirect();
-
-        // Check the entity has been delete on the list
-        $this->assertNotRegExp('/Foo/', $client->getResponse()->getContent());
+        $classes = array(
+            "Demo\PostBundle\DataFixtures\ORM\LoadPostData",
+            "Demo\UserBundle\DataFixtures\ORM\LoadUserData"
+        );
+        $this->loadFixtures($classes);
     }
+    
+    public function testIndex()
+    {
+        $client = static::createClient();
+        
+        $crawler = $client->request('GET', '/user/');
+        $this->assertEquals(200, $client->getResponse()->getStatusCode(), "Unexpected HTTP status code for GET /post/");
+        
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('html:contains("Create a new entry")')->count()
+        );
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('html:contains("Test User")')->count()
+        );
+    }
+    
+    public function testNew()
+    {
+        $client = static::createClient();
+        
+        $crawler = $client->request('GET', '/user/');
+        
+        $crawler = $client->click($crawler->selectLink('Create a new entry')->link());
+        
+        $form = $crawler->selectButton('Create')->form(array(
+            'demo_userbundle_user[name]'       => 'Another Test User',
+            'demo_userbundle_user[username]'   => 'another_test_user',
+            'demo_userbundle_user[email]'      => 'test@anotheruser.com'
+        ));
 
-    */
+        $client->submit($form);
+        $crawler = $client->followRedirect();
+        
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('html:contains("Another Test User")')->count()
+        );
+    }
+    
+    public function testEdit()
+    {
+        $client = static::createClient();
+        
+        $crawler = $client->request('GET', '/user/');
+        
+        $crawler = $client->click($crawler->selectLink('edit')->link());
+        
+        $form = $crawler->selectButton('Update')->form(array(
+            'demo_userbundle_user[name]'       => 'An edited user'
+        ));
+
+        $client->submit($form);
+        $crawler = $client->followRedirect();
+        
+        $crawler = $client->request('GET', '/user/');
+        
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('html:contains("An edited user")')->count()
+        );
+    }
+    
+    public function testShow()
+    {
+        $client = static::createClient();
+        
+        $crawler = $client->request('GET', '/user/');
+        
+        $crawler = $client->click($crawler->selectLink('show')->link());
+        
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('html:contains("Test User")')->count()
+        );
+    }
+    
+    public function testDelete()
+    {
+        $client = static::createClient();
+        
+        $crawler = $client->request('GET', '/user/');
+        
+        $crawler = $client->click($crawler->selectLink('show')->link());
+        
+        $form = $crawler->selectButton('Delete')->form();
+
+        $client->submit($form);
+        
+        $crawler = $client->followRedirect();
+        
+        $this->assertEquals(
+            0,
+            $crawler->filter('html:contains("Test User")')->count()
+        );
+    }
 }
