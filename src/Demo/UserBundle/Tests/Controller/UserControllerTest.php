@@ -90,6 +90,13 @@ class UserControllerTest extends WebTestCase
             0,
             $crawler->filter('html:contains("Test User")')->count()
         );
+        
+        $crawler = $client->request('GET', '/user/9999');
+        
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('html:contains("Unable to find User entity.")')->count()
+        );
     }
     
     public function testDelete()

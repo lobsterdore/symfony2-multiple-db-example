@@ -90,6 +90,13 @@ class PostControllerTest extends WebTestCase
             0,
             $crawler->filter('html:contains("Test Post")')->count()
         );
+        
+        $crawler = $client->request('GET', '/post/9999');
+        
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('html:contains("Unable to find Post entity.")')->count()
+        );
     }
     
     public function testDelete()
