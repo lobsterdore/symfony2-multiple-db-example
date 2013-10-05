@@ -2,19 +2,10 @@
 
 namespace Demo\PostBundle\Tests\Controller;
 
-use Liip\FunctionalTestBundle\Test\WebTestCase;
+use Demo\TestBundle\Tests\WebTestCase;
 
 class PostControllerTest extends WebTestCase
 {
-    protected function setUp()
-    {
-        $classes = array(
-            "Demo\PostBundle\DataFixtures\ORM\LoadPostData",
-            "Demo\UserBundle\DataFixtures\ORM\LoadUserData"
-        );
-        $this->loadFixtures($classes);
-    }
-    
     public function testIndex()
     {
         $client = static::createClient();
